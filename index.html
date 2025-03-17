@@ -1,130 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <title>Python Bot Runner</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #121212;
-      color: #fff;
-    }
-    header {
-      background-color: #1f1f1f;
-      padding: 20px;
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      color: #00ff88;
-    }
-    .container {
-      padding: 30px;
-      max-width: 1000px;
-      margin: auto;
-    }
-    textarea {
-      width: 100%;
-      height: 400px;
-      background-color: #222;
-      color: #fff;
-      border: 1px solid #555;
-      border-radius: 10px;
-      padding: 15px;
-      font-size: 16px;
-      resize: none;
-    }
-    .buttons {
-      margin-top: 20px;
-      display: flex;
-      gap: 15px;
-    }
-    button {
-      padding: 10px 25px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .run-btn {
-      background-color: #00c853;
-      color: white;
-    }
-    .run-btn:hover {
-      background-color: #00e676;
-    }
-    .stop-btn {
-      background-color: #d50000;
-      color: white;
-    }
-    .stop-btn:hover {
-      background-color: #ff1744;
-    }
-    .status {
-      margin-top: 15px;
-      font-size: 18px;
-      color: #00ffcc;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مشغل أكواد بايثون</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h2 { color: #00ffcc; }
+        textarea {
+            width: 90%; height: 200px; font-family: monospace;
+            background-color: #2b2b2b; color: #00ff00;
+            border: 1px solid #555; padding: 10px; resize: none;
+        }
+        input, button {
+            margin: 10px; padding: 10px; font-size: 16px;
+            border: none; border-radius: 5px;
+        }
+        input { width: 200px; background-color: #444; color: #fff; text-align: center; }
+        button { background-color: #00cc66; color: white; cursor: pointer; }
+        button:hover { background-color: #00994d; }
+        .console {
+            width: 90%; height: 200px; background: #000; color: #0f0;
+            overflow-y: auto; text-align: left; padding: 10px;
+            border: 1px solid #333; margin: auto;
+        }
+    </style>
 </head>
 <body>
-  <header>Python Bot Runner</header>
-  <div class="container">
-    <textarea id="codeArea" placeholder="ألصق كود البوت هنا..."></textarea>
-    <div class="buttons">
-      <button class="run-btn" onclick="runBot()">تشغيل</button>
-      <button class="stop-btn" onclick="stopBot()">إيقاف</button>
-    </div>
-    <div class="status" id="statusText">الحالة: غير نشط</div>
-  </div>
 
-  <script>
-    let isRunning = false;
-    let currentProcess = null;
+    <h2>مشغل أكواد بايثون</h2>
 
-    function runBot() {
-      if (isRunning) {
-        alert("البوت يعمل بالفعل!");
-        return;
-      }
-      const code = document.getElementById('codeArea').value;
-      if (!code.trim()) {
-        alert("الرجاء لصق كود البوت أولاً.");
-        return;
-      }
+    <textarea id="code" placeholder="اكتب كود بايثون هنا..."></textarea><br>
+    <input type="text" id="filename" placeholder="اسم الملف (مثلاً bot.py)">
+    <button onclick="saveCode()">حفظ</button>
 
-      // استخراج المكتبات من import وتثبيتها
-      const imports = [...code.matchAll(/import\s+(\w+)/g)].map(match => match[1]);
-      if (imports.length > 0) {
-        let toInstall = [...new Set(imports)];
-        fetch('/install', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ packages: toInstall })
-        });
-      }
+    <h3>Console:</h3>
+    <div class="console" id="console">هنا ستظهر النتائج...</div>
 
-      // إرسال الكود للتشغيل
-      fetch('/run', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code })
-      });
+    <button onclick="startScript()">بدء</button>
+    <button onclick="stopScript()">إيقاف</button>
 
-      isRunning = true;
-      document.getElementById('statusText').innerText = "الحالة: البوت يعمل الآن";
-    }
+    <script>
+        function saveCode() {
+            const code = document.getElementById("code").value;
+            const filename = document.getElementById("filename").value || "script.py";
 
-    function stopBot() {
-      if (!isRunning) {
-        alert("البوت متوقف بالفعل!");
-        return;
-      }
-      fetch('/stop', { method: 'POST' });
-      isRunning = false;
-      document.getElementById('statusText').innerText = "الحالة: تم إيقاف البوت";
-    }
-  </script>
+            fetch("/save", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ filename, code })
+            }).then(response => response.text()).then(alert);
+        }
+
+        function startScript() {
+            fetch("/start").then(response => response.text()).then(output => {
+                document.getElementById("console").innerText = output;
+            });
+        }
+
+        function stopScript() {
+            fetch("/stop").then(response => response.text()).then(alert);
+        }
+    </script>
+
 </body>
 </html>
