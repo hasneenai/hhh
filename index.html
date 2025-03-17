@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تشغيل بوتات بايثون</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #1e1e1e;
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      border-bottom: 2px solid #333;
+    }
+    .container {
+      padding: 20px;
+    }
+    input[type="file"], button {
+      background-color: #333;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      margin: 5px 0;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #555;
+    }
+    .file-list {
+      background-color: #1e1e1e;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+    .file-item {
+      padding: 10px;
+      background-color: #2a2a2a;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+    .btns {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<header>لوحة إدارة بوتات بايثون</header>
+
+<div class="container">
+  <h3>إضافة ملف بوت:</h3>
+  <input type="file" id="fileInput" multiple>
+  <button onclick="uploadFiles()">رفع الملفات</button>
+
+  <div class="file-list" id="fileList">
+    <!-- تظهر الملفات هنا -->
+  </div>
+</div>
+
+<script>
+  let files = [];
+
+  function uploadFiles() {
+    const input = document.getElementById("fileInput");
+    for (let file of input.files) {
+      files.push({ name: file.name, running: false });
+    }
+    showFiles();
+    alert("تم رفع الملفات (محلياً - يتطلب backend لتشغيل حقيقي)");
+  }
+
+  function showFiles() {
+    const list = document.getElementById("fileList");
+    list.innerHTML = "";
+    files.forEach((file, index) => {
+      const div = document.createElement("div");
+      div.className = "file-item";
+      div.innerHTML = `
+        <strong>${file.name}</strong>
+        <div class="btns">
+          <button onclick="startFile(${index})">تشغيل</button>
+          <button onclick="stopFile(${index})">إيقاف</button>
+        </div>
+        <div id="status-${index}">الحالة: ${file.running ? 'يعمل' : 'متوقف'}</div>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  function startFile(index) {
+    files[index].running = true;
+    document.getElementById(`status-${index}`).textContent = "الحالة: يعمل";
+    alert(`تم تشغيل الملف: ${files[index].name} (وهمياً - ربط فعلي يحتاج backend)`);
+    // هنا مستقبلاً يتم إرسال طلب إلى Flask لتشغيل الملف فعلياً
+  }
+
+  function stopFile(index) {
+    files[index].running = false;
+    document.getElementById(`status-${index}`).textContent = "الحالة: متوقف";
+    alert(`تم إيقاف الملف: ${files[index].name} (وهمياً - ربط فعلي يحتاج backend)`);
+    // هنا مستقبلاً يتم إرسال طلب إلى Flask لإيقاف الملف فعلياً
+  }
+</script>
+
+</body>
+</html>
