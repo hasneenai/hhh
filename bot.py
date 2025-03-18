@@ -4,7 +4,7 @@ import os, uuid
 
 BOT_TOKEN = "5383004720:AAHxtz1UJvcpOmdHCOwWCijb9ySnIXBZRYU"
 OWNER_ID = 5376094649
-DOMAIN = "http://38.180.115.186/
+DOMAIN = "http://38.180.115.186"
 
 bot = TeleBot(BOT_TOKEN)
 app = Flask(__name__)
